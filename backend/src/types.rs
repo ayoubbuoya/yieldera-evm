@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 #[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct CoingeckoOhlcvRes {
-    data: CoingeckoResData,
+    pub data: CoingeckoResData,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
@@ -53,4 +53,12 @@ impl std::str::FromStr for StrategyType {
             _ => Err(()),
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
+pub struct AIResponse {
+    pub low_price: f64,
+    pub upper_price: f64,
+    pub confidence: f64,
+    pub reason: String,
 }

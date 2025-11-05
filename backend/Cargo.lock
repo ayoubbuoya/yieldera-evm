@@ -5376,6 +5376,7 @@ dependencies = [
  "once_cell",
  "reqwest",
  "rig-core",
+ "schemars 1.0.5",
  "serde",
  "serde_json",
  "tokio",

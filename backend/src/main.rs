@@ -13,6 +13,7 @@ mod core;
 mod state;
 mod types;
 mod strategies;
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

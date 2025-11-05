@@ -1,6 +1,7 @@
 use anyhow::Result;
 use reqwest::header::{ACCEPT, HeaderMap, HeaderValue};
 use serde_json::Value;
+use tracing::info;
 
 use crate::{
     config::{COINGECKO_NETWORK_ID, CONFIG},
@@ -32,6 +33,11 @@ pub async fn get_pool_ohlcv_data(pool_address: &str) -> Result<CoingeckoOhlcvRes
     let ohlcv_data_res: Value = response.json().await?;
 
     let ohlcv_data: CoingeckoOhlcvRes = serde_json::from_value(ohlcv_data_res)?;
+
+    info!(
+        "Coingecko data fetched successfully: {:?}",
+        ohlcv_data.data.attributes.ohlcv_list.len()
+    );
 
     Ok(ohlcv_data)
 }

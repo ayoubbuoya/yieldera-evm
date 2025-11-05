@@ -3,9 +3,7 @@ use std::str::FromStr;
 use actix_web::{HttpResponse, Responder, get, post, web};
 
 use crate::{
-    core::coingecko::get_pool_ohlcv_data,
-    strategies::{Strategy, narrow::NarrowStrategy, wide::WideStrategy},
-    types::{CoingeckoOhlcvRes, RangeSuggestion, StrategyType},
+    core::coingecko::get_pool_ohlcv_data, state::AppState, strategies::{Strategy, narrow::NarrowStrategy, wide::WideStrategy}, types::{CoingeckoOhlcvRes, RangeSuggestion, StrategyType}
 };
 
 #[utoipa::path(
@@ -49,7 +47,10 @@ async fn get_pool_coingecko_data(pool_address: web::Path<String>) -> impl Respon
     )
 )]
 #[get("/pools/{pool_address}/liquidity/{strategy}/suggest")]
-async fn suggest_liquidity_range(path: web::Path<(String, String)>) -> impl Responder {
+async fn suggest_liquidity_range(
+    app_state: web::Data<AppState>,
+    path: web::Path<(String, String)>,
+) -> impl Responder {
     let (pool_address, strategy_str) = path.into_inner();
 
     // Validate strategy type
@@ -65,12 +66,12 @@ async fn suggest_liquidity_range(path: web::Path<(String, String)>) -> impl Resp
     let suggestion = match strategy {
         StrategyType::Narrow => {
             NarrowStrategy
-                .suggest_price_range(&pool_address, &strategy_str)
+                .suggest_price_range(&app_state, &pool_address)
                 .await
         }
         StrategyType::Wide => {
             WideStrategy
-                .suggest_price_range(&pool_address, &strategy_str)
+                .suggest_price_range(&app_state, &pool_address)
                 .await
         }
     };

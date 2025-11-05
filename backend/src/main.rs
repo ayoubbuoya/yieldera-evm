@@ -1,13 +1,38 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, web};
+use tracing::info;
+use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::SwaggerUi;
 
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Initialize the logger logic
+    let file_appender = tracing_appender::rolling::daily("./logs", "yieldera.log");
+    let (file_writer, _guard) = tracing_appender::non_blocking(file_appender);
+
+    // Console writer (stdout)
+    let console_layer = fmt::layer().pretty(); // Optional: makes console output prettier
+
+    // File layer
+    let file_layer = fmt::layer().with_writer(file_writer).with_ansi(false); // don't add colors to the file logs
+
+    // 🔥 Only accept logs that match your crate
+    let filter = EnvFilter::new("yieldera=trace");
+
+    // Combine both
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(console_layer)
+        .with(file_layer)
+        .init();
+
+    info!("Logger initialized Successfully");
+
     // Start the http server
-    println!("Starting Http Server at http://127.0.0.1:8090");
-    println!("Starting SWAGGER Server at http://127.0.0.1:8090/swagger-ui/");
+    info!("Starting Http Server at http://127.0.0.1:8090");
+    info!("Starting SWAGGER Server at http://127.0.0.1:8090/swagger-ui/");
 
     let app_state = web::Data::new(()); // Placeholder for shared application state
 

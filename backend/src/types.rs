@@ -1,22 +1,23 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct CoingeckoOhlcvRes {
     data: CoingeckoResData,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
 pub struct CoingeckoResData {
     pub id: String,
     pub attributes: CoingeckoResDataAttributes,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
 pub struct CoingeckoResDataAttributes {
     pub ohlcv_list: Vec<OhlcvEntry>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
 pub struct OhlcvEntry(
     i64, // timestamp (UNIX)
     f64, // open

@@ -16,7 +16,6 @@ impl Config {
         let coingecko_api_key =
             std::env::var("COINGECKO_API_KEY").expect("COINGECKO_API_KEY is not set");
 
-
         Self { coingecko_api_key }
     }
 }

@@ -5,6 +5,7 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::SwaggerUi;
 
+mod api;
 mod core;
 mod state;
 
@@ -52,6 +53,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .into_utoipa_app()
             .app_data(web::Data::clone(&app_state))
+            .service(api::get_index_service)
+            .service(api::get_health_service)
             .split_for_parts();
 
         app.service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", app_api))

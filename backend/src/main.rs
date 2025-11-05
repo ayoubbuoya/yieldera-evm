@@ -12,6 +12,7 @@ mod config;
 mod core;
 mod state;
 mod types;
+mod strategies;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -62,6 +63,7 @@ async fn main() -> std::io::Result<()> {
             .service(api::get_index_service)
             .service(api::get_health_service)
             .service(api::get_pool_coingecko_data)
+            .service(api::suggest_liquidity_range)
             .split_for_parts();
 
         app.service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", app_api))

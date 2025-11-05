@@ -1,6 +1,12 @@
+use std::str::FromStr;
+
 use actix_web::{HttpResponse, Responder, get, post, web};
 
-use crate::{core::coingecko::get_pool_ohlcv_data, types::CoingeckoOhlcvRes};
+use crate::{
+    core::coingecko::get_pool_ohlcv_data,
+    strategies::{Strategy, narrow::NarrowStrategy, wide::WideStrategy},
+    types::{CoingeckoOhlcvRes, RangeSuggestion, StrategyType},
+};
 
 #[utoipa::path(
         responses(
@@ -33,6 +39,44 @@ async fn get_pool_coingecko_data(pool_address: web::Path<String>) -> impl Respon
 
     match coingecko_data {
         Ok(data) => HttpResponse::Ok().json(data),
+        Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+    }
+}
+
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Suggested liquidity range", body = RangeSuggestion),
+    )
+)]
+#[get("/pools/{pool_address}/liquidity/{strategy}/suggest")]
+async fn suggest_liquidity_range(path: web::Path<(String, String)>) -> impl Responder {
+    let (pool_address, strategy_str) = path.into_inner();
+
+    // Validate strategy type
+    let strategy = match StrategyType::from_str(&strategy_str) {
+        Ok(s) => s,
+        Err(_) => {
+            return HttpResponse::BadRequest()
+                .body("Invalid strategy type. Use 'narrow' or 'wide'.");
+        }
+    };
+
+    // use the strategy trait to suggest liquidity range
+    let suggestion = match strategy {
+        StrategyType::Narrow => {
+            NarrowStrategy
+                .suggest_price_range(&pool_address, &strategy_str)
+                .await
+        }
+        StrategyType::Wide => {
+            WideStrategy
+                .suggest_price_range(&pool_address, &strategy_str)
+                .await
+        }
+    };
+
+    match suggestion {
+        Ok(suggestion) => HttpResponse::Ok().json(suggestion),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
     }
 }

@@ -26,3 +26,31 @@ pub struct OhlcvEntry(
     f64, // close
     f64, // volume
 );
+
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
+pub struct RangeSuggestion {
+    pub up_price: f64,
+    pub down_price: f64,
+    pub confidence: f64,
+    pub reason: String,
+    pub strategy: StrategyType,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
+pub enum StrategyType {
+    Narrow,
+    Wide,
+}
+
+// Implment from str for StrategyType
+impl std::str::FromStr for StrategyType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "narrow" => Ok(StrategyType::Narrow),
+            "wide" => Ok(StrategyType::Wide),
+            _ => Err(()),
+        }
+    }
+}

@@ -23,7 +23,7 @@ pub async fn init_ai_agent() -> Result<Agent<CompletionModel>> {
 
     // Create agent with a single context prompt
     let agent = client
-        .agent("gemini-2.5-pro")
+        .agent("gemini-2.5-flash")
         .preamble("You are a liquidity manager AI assistant. Your goal is to help users optimize their yield farming strategies on EVM-compatible blockchains by suggesting the best price range to provide liquidity based on current market conditions and historical data (data will be provided to you on the prompt by coingecko).")
         .temperature(0.2)
         // The `GenerationConfig` utility struct helps construct a typesafe `additional_params`

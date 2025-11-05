@@ -5,9 +5,14 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::SwaggerUi;
 
+mod core;
+mod state;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Load environment variables from .env file
+    dotenvy::dotenv().ok();
+
     // Initialize the logger logic
     let file_appender = tracing_appender::rolling::daily("./logs", "yieldera.log");
     let (file_writer, _guard) = tracing_appender::non_blocking(file_appender);
@@ -30,11 +35,12 @@ async fn main() -> std::io::Result<()> {
 
     info!("Logger initialized Successfully");
 
+    // Initialize application state which includes the AI agent
+    let app_state = web::Data::new(state::AppState::new().await);
+
     // Start the http server
     info!("Starting Http Server at http://127.0.0.1:8090");
     info!("Starting SWAGGER Server at http://127.0.0.1:8090/swagger-ui/");
-
-    let app_state = web::Data::new(()); // Placeholder for shared application state
 
     HttpServer::new(move || {
         let cors = Cors::default()

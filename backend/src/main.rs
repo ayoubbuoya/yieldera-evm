@@ -5,9 +5,13 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::SwaggerUi;
 
+use crate::config::CONFIG;
+
 mod api;
+mod config;
 mod core;
 mod state;
+mod types;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -35,6 +39,8 @@ async fn main() -> std::io::Result<()> {
         .init();
 
     info!("Logger initialized Successfully");
+
+    info!("Config: {:?}", *CONFIG);
 
     // Initialize application state which includes the AI agent
     let app_state = web::Data::new(state::AppState::new().await);

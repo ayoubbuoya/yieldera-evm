@@ -5373,6 +5373,8 @@ dependencies = [
  "alloy",
  "anyhow",
  "dotenvy",
+ "once_cell",
+ "reqwest",
  "rig-core",
  "serde",
  "serde_json",
